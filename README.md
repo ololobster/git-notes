@@ -230,6 +230,8 @@ $ git log -S'select_column' -- hac_dashboard/utils/dynamic_table.py
 $ git describe --abbrev=0
 ```
 
+Git предусматривает для файлов лишь 3 варианта прав: `100644`, `100755` (выполняемый файл), `120000` (символьная ссылка).
+
 # Внутреннее устройство
 
 Единицей хранения данных является объект, который идентифицируется 40-символьным хешем SHA1.
@@ -272,6 +274,48 @@ ref: refs/heads/master
 ```
 c61f0c0afdf2ae48db1f0b15cf1cc0023d88c203
 ```
+
+Пример создания коммита без высокоуровневых команд `git add` и `git commit`:
+1. Создаём BLOB-объект:
+   ```
+   $ echo 'my blob' | git hash-object -w --stdin
+   0b729d77bcd6e98e02910a24d781736df537ef13
+   $ git cat-file -t 0b729d77
+   blob
+   $ git cat-file -p 0b729d77
+   my blob
+   ```
+   В `.git/objects` появился новый файл:
+   ```
+   $ ls .git/objects/0b
+   729d77bcd6e98e02910a24d781736df537ef13
+   ```
+1. Добавляем в корневой каталог новый файл:
+   ```
+   $ git update-index --add --cacheinfo 100644 0b729d77bcd6e98e02910a24d781736df537ef13 my_blob.txt
+   $ git write-tree
+   6fd058384276fe29baced4899f2a06f671989d6e
+   $ git cat-file -t 6fd058
+   tree
+   $ git cat-file -p 6fd058
+   ...
+   100644 blob 0b729d77bcd6e98e02910a24d781736df537ef13 my_blob.txt
+   ```
+1. Создаём новый коммит на основе этого дерева (прошлый коммит — `3b64db71`):
+   ```
+   $ git commit-tree 6fd058 -p 3b64db71 -m 'test'
+   73008467263c517658273f774b992ac135d019a6
+   $ git cat-file -t 73008467
+   commit
+   ```
+1. Переставляем кончик ветки `master` на новый коммит:
+   ```
+   $ git update-ref refs/heads/master 73008467
+   ```
+1. `git log` показывает всё корректно, но файла `my_blob.txt` нет...
+   ```
+   $ git checkout HEAD -- my_blob.txt
+   ```
 
 # Подходы к выпуску релизов
 
