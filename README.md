@@ -15,8 +15,8 @@
    [прочее](#прочее)
 1. [Подходы к выпуску релизов](#подходы-к-выпуску-релизов):
    [Git flow](#git-flow),
-   [GitHub flow](#github-flow),
-   [GitLab flow](#gitlab-flow)
+   [GitLab flow с релизными ветками](#gitlab-flow-с-релизными-ветками),
+   [GitHub flow](#github-flow).
 
 # Работа с репозиториями
 
@@ -170,9 +170,9 @@ $ git rebase ⟨branch⟩
 1. Создание merge-коммита легко отменить, т.к. при этом создаётся 1 запись в reflog.
    А вот `git rebase` может создать десятки записей.
 
-Переключиться на ветку `feature`, найти изменения относительно `master` и залить их в `release`:
+Переключиться на ветку `feature`, найти изменения относительно `main` и залить их в `release`:
 ```
-$ git rebase --onto release master feature
+$ git rebase --onto release main feature
 ```
 Указатель `release` при этом остаётся на месте.
 
@@ -307,9 +307,9 @@ $ git cat-file -t ⟨id⟩
    $ git cat-file -t 73008467
    commit
    ```
-1. Переставляем кончик ветки `master` на новый коммит:
+1. Переставляем кончик ветки `main` на новый коммит:
    ```
-   $ git update-ref refs/heads/master 73008467
+   $ git update-ref refs/heads/main 73008467
    ```
 1. `git log` показывает всё корректно, но файла `my_blob.txt` нет...
    ```
@@ -322,18 +322,18 @@ $ git cat-file -t ⟨id⟩
 Каждый такой файл содержит ид коммита, который является кончиком ветки.
 Можно посмотреть этот ид:
 ```
-$ git rev-parse master
+$ git rev-parse main
 ```
 Ветке удалённого репозитория соответствует файл `.git/refs/remotes/⟨repo name⟩/⟨remote branch⟩`.
 Смотреть аналогично:
 ```
-$ git rev-parse origin/master
+$ git rev-parse origin/main
 ```
 
 Текстовый файл `.git/HEAD` указывает на текущий коммит.
-Если мы на ветке `master`, то `.git/HEAD` выглядит так:
+Если мы на ветке `main`, то `.git/HEAD` выглядит так:
 ```
-ref: refs/heads/master
+ref: refs/heads/main
 ```
 Если мы переключились на конкретный коммит `c61f0c0a`, то `.git/HEAD` выглядит так:
 ```
@@ -348,44 +348,51 @@ Reflog хранится в `.git/logs`:
 
 # Подходы к выпуску релизов
 
+### GitHub flow
+
+Работа над фичами идёт в отдельных ветках, `main` всегда должна оставаться стабильной.
+Если что-то залито в `main`, то это новый релиз (по заветам continuous delivery).
+
+Сложность: очень просто.
+
+GitLab предлагает разновидность с ветками `main` (или `development`) и `production`.
+Новым релизом считается заливание `main` в `production`.
+
+Сложность: просто.
+Удобнее GitHub flow, когда мы не можем мгновенно развернуть новую версию в любой момент (например, есть deployment windows, есть модерация мобильных приложений в Apple App Store и т.д.), а разработка не должна останавливаться.
+
+См. также:
+1. [Understanding the GitHub flow](https://guides.github.com/introduction/flow/).
+1. [GitHub Flow](http://scottchacon.com/2011/08/31/github-flow.html) — Scott Chacon.
+
+### GitLab flow с релизными ветками
+
+`main` предназначена для разработки нового релиза.
+Когда релиз пора выпускать, из `main` отпочковывается специальная ветка, где его будут тестировать, шлифовать  и поддерживать.
+Выпуском новой версии считается изменение в релизной ветке (опционально — добавление тега в релизную ветку).
+
+Сложность: сложно.
+Предназначен для ситуаций когда нам надо поддерживать старые версии продолжительное время.
+
+![](img/gitlab_flow_with_release_branches.png "GitLab flow с релизными ветками.")  
+*GitLab flow с релизными ветками.*
+
+См. также:
+1. [Introduction to GitLab Flow](https://docs.gitlab.com/ee/topics/gitlab_flow.html).
+
 ### Git flow
 
-Простейший вариант Git flow подразумевает 2 основные ветки:
-- в `develop` идёт разработка нового релиза;
-- обновление `master` означает выпуск нового релиза, соответствующий коммит помечается тегом;
-- фичи разрабатываются отдельных ветках, которые заливаются в `develop`.
-
-![](img/simple_git_flow.png "Простейший вариант git-flow.")
-
-Опционально:
-- ветки для оперативного исправления серьёзных багов, которые заливаются и в `master` и в `develop`;
-- ветки для подготовки релизов.
+Используемые ветки:
+- работа над фичами идёт в отдельных ветках, они вливаются в `develop`;
+- `develop` предназначена для разработки нового релиза;
+- когда релиз пора выпускать, из `develop` отпочковывается специальная ветка, где его будут тестировать и шлифовать (в `develop` продолжается работа над следующим релизом);
+- `main` всегда должна оставаться стабильной, заливка релизной ветки в `main` означает выпуск новой версии, соответствующий коммит помечается тегом;
+- ветки для оперативного исправления серьёзных багов, которые вливаются и в `main` и в `develop`.
 
 ![](img/git_flow.png "Git flow.")  
 *Git flow.*
 
-Особенности:
-1. Сложно.
+Сложность: очень сложно.
 
 См. также:
-1. [A successful Git branching model](https://nvie.com/posts/a-successful-git-branching-model/) by Vincent Driessen.
-
-### GitHub flow
-
-Continuous delivery — это практика, при которой разработчики выпускают обновления непосредственно в production (путём слияний с `master`) в автоматическом режиме.
-
-Ветка `master` всегда должна оставаться стабильной.
-
-Особенности:
-1. Очень просто.
-1. Норм. для SaaS-приложений.
-
-См. также:
-1. [Understanding the GitHub flow](https://guides.github.com/introduction/flow/).
-1. [GitHub Flow](http://scottchacon.com/2011/08/31/github-flow.html) by Scott Chacon.
-1. [Simple Git workflow is simple](https://www.atlassian.com/blog/git/simple-git-workflow-is-simple) by Atlassian.
-
-### GitLab flow
-
-См. также:
-1. [Introduction to GitLab Flow](https://docs.gitlab.com/ee/topics/gitlab_flow.html)
+1. [A successful Git branching model](https://nvie.com/posts/a-successful-git-branching-model/) — Vincent Driessen.
