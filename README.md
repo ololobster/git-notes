@@ -58,28 +58,25 @@ $ git remote remove ⟨repo name⟩
 
 ### Настройки
 
+Вывести/изменить значение параметра для текущего репа (хранится в `.git/config`):
+```
+$ git config ⟨param⟩
+$ git config ⟨param⟩ ⟨value⟩
+```
+Вывести/изменить глобальное значение параметра (хранится в `~/.gitconfig`):
+```
+$ git config --global ⟨param⟩
+$ git config --global ⟨param⟩ ⟨value⟩
+```
 Вывести все настройки:
 ```
 $ git config --list --show-origin
 ```
-Вывести глобальное значение параметра (хранится в `~/.gitconfig`):
-```
-$ git config --global user.email
-```
-Вывести значение параметра для текущего репа (хранится в `.git/config`):
-```
-$ git config user.email
-```
-Изменить значение параметра:
-```
-$ git config user.name "John Doe"
-```
-Добавляем `--global` для глобальных изменений.
 
-Do not fuck with end of line:
-```
-$ git config --global core.autocrlf false
-```
+Некоторые параметры:
+1. `user.email` и `user.name` — информация по автору.
+1. `core.autocrlf` (`true`, `false` или `input`) — надо ли править переводы строк в зависимости от ОС.
+   Просто используем `false` в сочетании с UTF-8 и `\n`.
 
 ### Дочерние репозитории
 
@@ -295,20 +292,20 @@ $ git cat-file -t ⟨id⟩
    $ ls .git/objects/0b
    729d77bcd6e98e02910a24d781736df537ef13
    ```
-1. Добавляем в корневой каталог новый файл:
+1. Добавляем в корневой каталог новый файл `my_blob.txt` с правами `100644`:
    ```
    $ git update-index --add --cacheinfo 100644 0b729d77bcd6e98e02910a24d781736df537ef13 my_blob.txt
    $ git write-tree
    6fd058384276fe29baced4899f2a06f671989d6e
-   $ git cat-file -t 6fd058
+   $ git cat-file -t 6fd05838
    tree
-   $ git cat-file -p 6fd058
+   $ git cat-file -p 6fd05838
    ...
    100644 blob 0b729d77bcd6e98e02910a24d781736df537ef13 my_blob.txt
    ```
-1. Создаём новый коммит на основе этого дерева (предшествующий коммит — `3b64db71`):
+1. Создаём новый коммит на основе дерева `6fd05838` (предшествующий коммит — `3b64db71`):
    ```
-   $ git commit-tree 6fd058 -p 3b64db71 -m 'test'
+   $ git commit-tree 6fd05838 -p 3b64db71 -m 'test'
    73008467263c517658273f774b992ac135d019a6
    $ git cat-file -t 73008467
    commit
