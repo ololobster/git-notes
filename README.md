@@ -96,7 +96,7 @@ $ git submodule update --init --recursive
    $ git submodule add ⟨repo⟩
    ```
 
-# Ветки
+# Работа с ветками
 
 `git pull`  =  `git fetch`  +  `git merge`.
 
@@ -140,13 +140,10 @@ $ git push ⟨repo name⟩ ⟨remote branch⟩
    $ git push --force ⟨repo name⟩ ⟨remote branch⟩
    ```
 
-Скачать ветку, которой ещё нет в локальном репе:
+Скачать ветку из удалённого репа (в локальном репе появится tracking-ветка с названием `⟨repo name⟩/⟨remote branch⟩`, связанная с веткой удалённого репа):
 ```
 $ git fetch ⟨repo name⟩ ⟨remote branch⟩
 ```
-
-Checking out a local branch from a remote-tracking branch automatically creates what is called a “tracking branch” (and the branch it tracks is called an “upstream branch”).
-Tracking branches are local branches that have a direct relationship to a remote branch.
 
 ### Merge vs rebase
 
