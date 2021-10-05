@@ -16,9 +16,9 @@
    [объекты](#объекты),
    [прочее](#прочее)
 1. [Подходы к выпуску релизов](#подходы-к-выпуску-релизов):
-   [Git flow](#git-flow),
-   [GitLab flow с релизными ветками](#gitlab-flow-с-релизными-ветками),
-   [GitHub flow](#github-flow).
+   [GitHub flow](#github-flow),
+   [GitLab flow](#gitlab-flow),
+   [Git flow](#git-flow).
 
 # Работа с репозиториями
 
@@ -404,27 +404,34 @@ Reflog хранится в `.git/logs`:
 Сложность: очень просто.
 Подойдёт для SaaS-приложения, которое деплоится каждый день или чаще.
 
-GitLab предлагает разновидность с ветками `main` (или `development`) и `production`.
+См. также:
+1. [Understanding the GitHub flow](https://guides.github.com/introduction/flow/).
+1. [GitHub Flow](http://scottchacon.com/2011/08/31/github-flow.html) — Scott Chacon.
+
+### GitLab flow
+
+1-я схема: усовершенствованный GitHub flow с ветками `main` (или `development`) и `production`.
 Новым релизом считается заливание `main` в `production`.
 
 Сложность: просто.
 Удобнее GitHub flow, когда мы не можем мгновенно задеплоить новую версию в любой момент (например, есть deployment windows, есть модерация мобильных приложений в Apple App Store и т.д.), а разработка в `main` не должна останавливаться.
 
-См. также:
-1. [Understanding the GitHub flow](https://guides.github.com/introduction/flow/).
-1. [GitHub Flow](http://scottchacon.com/2011/08/31/github-flow.html) — Scott Chacon.
+2-я схема: каждая ветка соответствует какому-либо окружению.
+При обновлении ветки происходит деплой в соответствующее окружение.
+Пример: тестовые окружения `staging` и `pre-prod` + боевое окружение `production`.
 
-### GitLab flow с релизными ветками
+![](img/gitlab_environment_branches.png "GitLab flow с ветками, соответствующими окружениям.")  
+*GitLab flow с ветками, соответствующими окружениям.*
 
-`main` предназначена для разработки нового релиза.
+3-я схема: `main` предназначена для разработки нового релиза.
 Когда релиз пора выпускать, из `main` отпочковывается специальная ветка, где его будут тестировать, шлифовать  и поддерживать.
 Выпуском новой версии считается изменение в релизной ветке (опционально — добавление тега в релизную ветку).
 
 Сложность: сложно.
 Предназначен для ситуаций когда нам надо поддерживать старые версии продолжительное время.
 
-![](img/gitlab_flow_with_release_branches.png "GitLab flow с релизными ветками.")  
-*GitLab flow с релизными ветками.*
+![](img/gitlab_version_branches.png "GitLab flow с ветками, соответствующими релизам.")  
+*GitLab flow с ветками, соответствующими релизам.*
 
 См. также:
 1. [Introduction to GitLab Flow](https://docs.gitlab.com/ee/topics/gitlab_flow.html).
