@@ -159,6 +159,17 @@ $ git fetch ⟨repo name⟩ ⟨branch⟩
 $ git checkout -b ⟨branch⟩ ⟨repo name⟩/⟨branch⟩
 ```
 
+Посмотреть разницу между 2 ветками:
+```
+$ git diff ⟨branch 1⟩..⟨branch 2⟩
+```
+Посмотреть разницу между 2 ветками для конкретного файла:
+```
+$ git diff ⟨branch 1⟩..⟨branch 2⟩ -- ⟨file⟩
+```
+Примечания:
+1. Можно указать tracking-ветку, например `origin/debian`.
+
 ### Merge vs rebase
 
 ![](img/merge_vs_rebase.svg "merge vs rebase.")  
