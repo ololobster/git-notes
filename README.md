@@ -697,3 +697,10 @@ $ gitlab-runner list
 Файлы `.bashrc` и `.bash_logout` могут выполняться в рамках задачи.
 Если задача падает на «Prepare environment», то можно начать с выпиливания `.bash_logout`.
 
+### Прочее
+
+Клонировать с аутентификацией по токену:
+```
+$ git clone https://gitlab-ci-token:⟨token⟩@gitlab.com/⟨project⟩
+```
+
